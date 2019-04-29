@@ -75,6 +75,8 @@ function addHoroscope() {
             document.querySelector('.gotten-horoscope-text').innerHTML = "You'll have to update or delete the saved horoscope before you save a new"
         }
 
+        console.log(response);
+
     })
 }
 
