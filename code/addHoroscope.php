@@ -6,20 +6,6 @@ class Horoscope {
         $this->database = new Database();
     }
 
-    public function getHoroscopes() {
-
-        $query = $this->database->connection->prepare("SELECT * FROM horoscopelist");
-        $query->execute();
-        $result = $query->fetchAll();
-
-        if(empty($result)) {
-            return array("error"=>"något gick fel");
-        }
-
-        return $result;
-
-    }
-
     public function addHoroscope($date) {
 
         $query = $this->database->connection->
@@ -29,13 +15,22 @@ class Horoscope {
         $result = $query->fetchAll();
         session_start();
 
-        $_SESSION['horoscope'] = $result;
-
         if(empty($result)) {
             return array("error"=>"något gick fel");
         }
 
-        return $result;
+        if($_POST['action'] == 'update' && !isset($_SESSION['horoscope'])) {
+            return json_encode(false);
+        }
+
+        if(isset($_SESSION['horoscope']) && $_POST['action'] == 'add') {
+
+            return json_encode(false);
+        } else {
+            $_SESSION['horoscope'] = $result;
+    
+            return json_encode(true);
+        }
 
     }
 

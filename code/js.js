@@ -1,9 +1,20 @@
 
 function makeRequest(url, method, formdata, callback) {
-    fetch(url, {
-        method: method,
-        body: formdata
-    }).then((data) => {
+
+    var headers
+    
+    if(method == "GET" || !formdata) {
+        headers = {
+            method: method
+        }
+    } else {
+        headers = {
+            method: method,
+            body: formdata
+        }
+    }
+
+    fetch(url, headers).then((data) => {
         return data.json();
     }).then((result) => {
         callback(result);
@@ -13,27 +24,36 @@ function makeRequest(url, method, formdata, callback) {
 }
 
 function getHoroscope() {
-    var requestData = new FormData();
-    requestData.append("collectionType", "horoscope");
-    requestData.append("action", "get");
+    makeRequest("./code/viewHoroscope.php", "GET", undefined, (response) => {
+        if(response == '') {
+            document.querySelector('.gotten-horoscope-text').innerHTML = '';
+        }else {
+            document.querySelector('.gotten-horoscope-text').innerHTML = JSON.stringify(response[0].horoscopeSign);
+        }
 
-    makeRequest("./code/requestHandler.php", "POST", requestData, (response) => {
-        console.log(response);
-        calculateHoroscope(response);
     })
 }
 
 function deleteHoroscope() {
-
-    var requestData = new FormData();
-
-    makeRequest("./code/deleteHoroscope.php", "DELETE", requestData, (response) => {
+    makeRequest("./code/deleteHoroscope.php", "DELETE", undefined, (response) => {
         console.log(response);
+        if(response == true) {
+            document.querySelector('.gotten-horoscope-text').innerHTML = 'Saved horoscope was deleted';
+        } else {
+            document.querySelector('.gotten-horoscope-text').innerHTML = 'Nothing to delete';
+        }
+
     })
 }
 
 function addHoroscope() {
     var date = document.querySelector('#date').value;
+
+    if(date == '') {
+        document.querySelector('.gotten-horoscope-text').innerHTML = "You need to add a date";
+        console.log(false);
+        return;
+    }
 
     var requestData = new FormData();
 
@@ -46,24 +66,47 @@ function addHoroscope() {
     }
 
     requestData.append('dateValue', newDate);
+    requestData.append('action', 'add');
 
     makeRequest("./code/addHoroscope.php", "POST", requestData, (response) => {
-        console.log(response);
-        document.querySelector('.gotten-horoscope-text').innerHTML = JSON.stringify(response[0].horoscopeSign);
+        if(response == 'true') {
+            getHoroscope();
+        } else if (response == 'false') {
+            document.querySelector('.gotten-horoscope-text').innerHTML = "You'll have to update or delete the saved horoscope before you save a new"
+        }
 
     })
 }
 
-function calculateHoroscope(horoscopeList) {
+function updateHoroscope() {
+    var date = document.querySelector('#date').value;
+    
+    if(date == '') {
+        document.querySelector('.gotten-horoscope-text').innerHTML = "You need to add a date";
+        console.log(false);
+        return;
+    }
 
-    var date = document.querySelector('#date');
-    horoscopeList.forEach((horo) => {
-        console.log(horo.dateFrom.slice(5));
-        currentHoroscope = horo;
-        document.querySelector('.gotten-horoscope-text').innerHTML = JSON.stringify(horo.horoscopeSign);
+    var requestData = new FormData();
+
+    var newDate = '';
+
+    if(date.slice(5, 7) == 01 && date.slice(8, 10) <= 19) {
+        newDate = '2001' + date.slice(4);
+    } else {
+        newDate = '2000' + date.slice(4);
+    }
+
+    requestData.append('dateValue', newDate);
+    requestData.append('action', 'update');
+
+
+    makeRequest("./code/updateHoroscope.php", "POST", requestData, (response) => {
+        if(response == 'true') {
+            console.log(response);
+            getHoroscope();
+        } else if (response == 'false') {
+            console.log(response);
+        }
     });
-
-
-    console.log(date.value.slice(5));
-
 }

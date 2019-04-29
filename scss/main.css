@@ -71,7 +71,7 @@ body {
       -ms-flex: 1;
           flex: 1;
   font-size: 1.4rem;
-  max-width: 8rem;
+  max-width: 6rem;
   border-radius: 5px;
   margin: 1rem 0.1rem 0;
   font-weight: 700;
@@ -88,8 +88,18 @@ body {
   border: 3px solid #0000b8;
 }
 
+.container .horoscope-input .btn-div input.update-btn {
+  color: #4b4a02;
+  border: 3px solid #fffb00;
+}
+
 .container .horoscope-input .btn-div input.delete-btn {
   color: #830000;
   border: 3px solid #ce0000;
+}
+
+.container .horoscope-input .gotten-horoscope-text {
+  font-size: 3rem;
+  text-align: center;
 }
 /*# sourceMappingURL=main.css.map */
