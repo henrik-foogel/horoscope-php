@@ -6,9 +6,10 @@ if ($_SERVER["REQUEST_METHOD"] == "DELETE") {
     if (isset($_SESSION['horoscope'])) {
 
         session_destroy();
-        return true;
+        echo json_encode(true);
+        
     } else {
 
-        return false;
+        echo json_encode(false);
     }
 }
