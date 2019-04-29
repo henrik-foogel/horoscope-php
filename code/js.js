@@ -25,18 +25,32 @@ function getHoroscope() {
 
 function deleteHoroscope() {
 
+    var requestData = new FormData();
+
+    makeRequest("./code/deleteHoroscope.php", "DELETE", requestData, (response) => {
+        console.log(response);
+    })
 }
 
 function addHoroscope() {
     var date = document.querySelector('#date').value;
 
     var requestData = new FormData();
-    var newDate = '2000' + date.slice(4);
+
+    var newDate = '';
+    
+    if(date.slice(5, 7) == 01 && date.slice(8, 10) <= 19) {
+        newDate = '2001' + date.slice(4);
+    } else {
+        newDate = '2000' + date.slice(4);
+    }
 
     requestData.append('dateValue', newDate);
 
     makeRequest("./code/addHoroscope.php", "POST", requestData, (response) => {
         console.log(response);
+        document.querySelector('.gotten-horoscope-text').innerHTML = JSON.stringify(response[0].horoscopeSign);
+
     })
 }
 
